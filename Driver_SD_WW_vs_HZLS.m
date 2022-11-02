@@ -1,6 +1,6 @@
 %==========================================================================
 % Driver for comparing two versions of steepest descent which use two
-% different line search techniques:
+% different line-search techniques:
 %    1. Line search with weak Wolfe conditions: this version uses the line
 %       search routine "linesch_ww" provided by Michael Overton in his
 %       HANSO 2.0 code package;
@@ -8,18 +8,21 @@
 %       conditions. The Hager-Zhang line search has been implemented by
 %       following the Julia code on:
 %       https://julianlsolvers.github.io/LineSearches.jl/stable/index.html
+
 % Use this script as it is provided to generate Fig. 5 in:
-%       Multilevel Riemannian optimization for low-rank problems,
-%       M. Sutti, B. Vandereycken, Tech. report (submitted), 2020.
-%       https://arxiv.org/abs/2005.06976
+%       Riemannian multigrid line search for low-rank problems,
+%       M. Sutti and B. Vandereycken, SIAM J. Sci. Comput., 43(3), A1803–A1831, 2021.
+%       https://epubs.siam.org/doi/10.1137/20M1337430
+
 % References: [1] Hager and Zhang, A new conjugate gradient method with
 %                 guaranteed descent and an efficient line search, SIAM
 %                 Journal on Optimization, 16 (2005), pp. 170–192.
 %             [2] Hager and Zhang, Algorithm 851: CG DESCENT, a Conjugate
 %                 Gradient Method with Guaranteed Descent, ACM Trans. Math.
 %                 Softw., 32 (2006), pp. 113–137.
+
 % Created:     2020.05.01
-% Last change: 2021.01.25
+% Last change: 2022.11.02
 
 %   Aug 29, 2020:
 %       Added Goldstein-Price function.
@@ -36,7 +39,7 @@
 close all; clear; clc;
 
 % Add folder and its subfolders to MATLAB path for the current session:
-addpath(genpath('../HZLS_code_scorporato'))
+addpath(genpath('../HZLS'))
 
 %--------------------------------------------------------------------------
 % Data
@@ -62,11 +65,11 @@ pars.var_type = 'matrix';
 pars.dim = 2;
 %--------------------------------------------------------------------------
 n = 100;       % size of the problem
-cond_A = 5;   % condition number of matrix A
+cond_A = 10;   % condition number of matrix A
 %--------------------------------------------------------------------------
 % Options for steepest descent:
-options_sd.maxiter = 100;     % number of steepest descent iterations
-options_sd.verbosity = 2;    % verbosity of the output of steepest descent
+options_sd.maxiter = 200;     % number of steepest descent iterations
+options_sd.verbosity = 1;    % verbosity of the output of steepest descent
                              % verbosity levels: 0, 1, 2.
 %--------------------------------------------------------------------------
 % Load Hager-Zhang linesearch options
@@ -213,4 +216,4 @@ pars.F0 = F0;
 [ ~, info_HZLS ] = steepest_descent_hzls( x0, problem, options_sd, options_hzls );
 %--------------------------------------------------------------------------
 % Plot results:
-plot_sd_ww_vs_hzls( info_WWLS, info_HZLS, Fh_ref );
+plot_sd_ww_vs_hzls( info_WWLS, info_HZLS, Fh_ref, pars );

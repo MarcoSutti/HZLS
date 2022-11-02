@@ -1,4 +1,4 @@
-function [] = plot_sd_ww_vs_hzls( info_WWLS, info_HZLS, Fh_ref )
+function [] = plot_sd_ww_vs_hzls( info_WWLS, info_HZLS, Fh_ref, pars )
 
 % function [] = plot_sd_ww_vs_hzls( info_NMLS_w_noise, info_WWLS, info_HZLS, pars )
 % Purpose: Plot the results given by 'Driver_SD_WW_vs_HZLS'.
@@ -92,7 +92,7 @@ handleLegend = legend( handle_array, ...
     '$|f_{k} - f_{\ast}|/|f_{\ast}|$, HZ', ...
     '$\|g_{k}\|/\|g_{0}\|$, HZ', ...
     '$\|X_{k} - X_{\ast}\|/\|X_{\ast}\|$, HZ'}, ...
-    'FontSize', 11, 'Location', 'eastoutside' );
+    'FontSize', 11, 'Location', 'NE' );
 
 drawnow;
 for i=1:6
@@ -104,70 +104,29 @@ end
 xlabel('iteration $k$ of steepest descent')
 xticks( 1:stride:length(diff_f_rel_WWLS) );
 xticklabels( 0:stride:length(diff_f_rel_WWLS) );
-% xlim( [ 0, length(diff_f_rel_WWLS) ] )
+xlim( [ 0, length(diff_f_rel_WWLS) ] )
 ylim( [ 5e-17, 10 ] )
-
---------------------------------------------------------------------------
-% Save the plot to file
-if strcmp(pars.fgname,'easy_quadratic')
-    %     fileName = [ 'Plots/', pars.fgname, '_', pars.var_type, '_hz_vs_ww' ];
-    export_fig Plots/easy_quadratic_matrix_hz_vs_ww.pdf -pdf -cmyk -transparent;
-elseif strcmp(pars.fgname,'rosenbrock_function')
-    %     fileName = [ 'Plots/', pars.fgname, '_hz_vs_ww' ];
-    export_fig Plots/rosenbrock_function_hz_vs_ww.pdf -pdf -cmyk -transparent;
-elseif strcmp(pars.fgname,'goldstein_price')
-    export_fig Plots/goldstein_price_hz_vs_ww.pdf -pdf -cmyk -transparent;
-end
-pause(0.5)
-saveas( gcf, fileName, 'epsc' );
-fprintf('+-----------------------------------------------------------------+\n');
-fprintf('Saved graph to file %s.eps.\n', fileName);
-
-
-% %----------------------------------------------------------------------
-% % 2nd plot
-% % Plot of the number of function evaluations vs iteration
-% figure(2)
-% x_WWLS = 1:length(info_WWLS.nfeval);
-% x_WWLS = [ x_WWLS; x_WWLS ];
-% y_WWLS = [ info_WWLS.nfeval; info_WWLS.nfeval ];
-% h_WWLS = area(x_WWLS([2:end end]),y_WWLS(1:end));
-% h_WWLS(1).FaceColor = green;
-% hold on
-% x_HZLS = 1:length(info_HZLS.nfeval);
-% x_HZLS = [ x_HZLS; x_HZLS ];
-% y_HZLS = [ info_HZLS.nfeval; info_HZLS.nfeval ];
-% h_HZLS = area( x_HZLS([2:end end]), y_HZLS(1:end) );
-% h_HZLS(1).FaceColor = red;
-% % h_HZLS(1).FaceAlpha = 7/8;   % Add transparency
-% xlabel('iteration $k$ of steepest descent')
-% ylabel('nf($k$)');
-% % title('Number of function evaluations vs iteration');
-% legend( {'WWLS','HZLS'}, 'FontSize', 13, 'Location', 'NE' );
-% xlim( [ 1, length(info_WWLS.nfeval) ] )
-% if strcmp(pars.fgname,'easy_quadratic')
-%     ylim( [ 0; max(max(info_WWLS.nfeval),max(info_HZLS.nfeval))+7 ] )
-% elseif strcmp(pars.fgname,'rosenbrock_function')
-%     ylim( [ 0; max(max(info_WWLS.nfeval),max(info_HZLS.nfeval))+5 ] )
-% end
-% %--------------------------------------------------------------------------
-% % Save the plot to file
-% if strcmp(pars.fgname,'easy_quadratic')
-% %     fileName = [ 'Plots/', pars.fgname, '_', pars.var_type, '_nf_vs_k_hz_vs_ww' ];
-%     export_fig Plots/easy_quadratic_matrix_nf_vs_k_hz_vs_ww.pdf -pdf -cmyk -transparent;
-% elseif strcmp(pars.fgname,'rosenbrock_function')
-% %     fileName = [ 'Plots/', pars.fgname, '_dim', num2str(pars.dim), '_nf_vs_k_hz_vs_ww' ];
-%     export_fig Plots/rosenbrock_function_nf_vs_k_hz_vs_ww.pdf -pdf -cmyk -transparent;
-% elseif strcmp(pars.fgname,'goldstein_price')
-%     export_fig Plots/goldstein_price_hz_vs_ww.pdf -pdf -cmyk -transparent;
-% end
-% pause(1)
-% % saveas( gcf, fileName, 'epsc' );
-% % fprintf('Saved graph to file %s.eps.\n', fileName);
 
 % Make the window of the figure looking a bit nicer
 fig=gcf;
 fig.Units='normalized';
 fig.OuterPosition=[0 1 0.5 0.66];
+
+%--------------------------------------------------------------------------
+% Save the plot to file
+if strcmp(pars.fgname,'easy_quadratic')
+    fileName = [ 'plots/', pars.fgname, '_', pars.var_type, '_hz_vs_ww' ];
+%     export_fig Plots/easy_quadratic_matrix_hz_vs_ww.pdf -pdf -cmyk -transparent;
+elseif strcmp(pars.fgname,'rosenbrock_function')
+    fileName = [ 'plots/', pars.fgname, '_hz_vs_ww' ];
+%     export_fig Plots/rosenbrock_function_hz_vs_ww.pdf -pdf -cmyk -transparent;
+elseif strcmp(pars.fgname,'goldstein_price')
+%     export_fig Plots/goldstein_price_hz_vs_ww.pdf -pdf -cmyk -transparent;
+end
+pause(0.5)
+saveas( gcf, fileName, 'epsc' );
+fprintf('+-----------------------------------------------------------------+\n');
+fprintf('Saved graph to file %s.eps.\n', fileName);
+%--------------------------------------------------------------------------
 
 end

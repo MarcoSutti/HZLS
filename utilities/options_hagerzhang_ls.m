@@ -19,7 +19,7 @@ options_hzls.sigma = 0.9;   % (Nocedal & Wright recommends 0.1 for GradientDesce
 % MS: the value 0.1 yields a more regular convergence behavior of the
 %     gradient norm.
 
-options_hzls.epsilon = 1e-10;    % The value from HZ2005, p. 186.
+options_hzls.epsilon = 1e-6;    % The value from HZ2005, p. 186.
 options_hzls.alphamax = 100;
 options_hzls.rho = 5;           % Hager and Zhang propose rho = 5
 options_hzls.gamma = 0.66;      % gamma is the decay factor for the bracketing interval (2/3)
@@ -36,4 +36,4 @@ options_hzls.psi1 = 0.2;
 % use psi2 = 2.0.
 options_hzls.psi2 = 2.0;
 options_hzls.psi3 = 0.1;
-options_hzls.quadstep = false;
+options_hzls.quadstep = true;
