@@ -2,8 +2,10 @@
 MATLAB implementation of the Hager–Zhang line-search technique.
 
 Line search by Hager and Zhang, which uses the approximate Wolfe conditions.
-This MATLAB version of the Hager–Zhang bracketing has been implemented by
-following the existing Julia code available at:
+
+This code was originally included in the RMGLS package, see [here](https://yareta.unige.ch/home/detail/833fad78-f35c-497c-b282-c62cae3172c9). We decided to make this new version available independently of the RMGLS code.
+
+This MATLAB version of the Hager–Zhang bracketing has been implemented by following the existing Julia code available at:
 https://julianlsolvers.github.io/LineSearches.jl/stable/index.html
 
 ## Main scripts
