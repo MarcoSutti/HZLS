@@ -36,4 +36,4 @@ options_hzls.psi1 = 0.2;
 % use psi2 = 2.0.
 options_hzls.psi2 = 2.0;
 options_hzls.psi3 = 0.1;
-options_hzls.quadstep = true;
+options_hzls.quadstep = false;

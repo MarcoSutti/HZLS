@@ -1,6 +1,6 @@
-function [ c ] = helper_hzls( problem, x, s, options_hzls )
+function [ c, stat_hzls ] = helper_hzls( problem, x, s, options_hzls )
 
-% function [ c ] = helper_hzls( problem, x, s, options_hzls )
+% function [ c, stat_hzls ] = helper_hzls( problem, x, s, options_hzls )
 % Purpose: Wraps the 'hagerzhang_linesearch' routine.
 
 % Created:     2019.10.16
@@ -11,7 +11,7 @@ function [ c ] = helper_hzls( problem, x, s, options_hzls )
 %       'hagerzhang_linesearch'.
 
 % Perform Hager-Zhang linesearch:
-[ alphas, ~ ] = hagerzhang_linesearch( problem, x, s, options_hzls );
+[ alphas, ~, ~, stat_hzls ] = hagerzhang_linesearch( problem, x, s, options_hzls );
 
 % The stepsize 'c' we look for is the last entry in the alphas vector:
 c = alphas(end);

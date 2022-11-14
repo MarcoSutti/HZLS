@@ -51,9 +51,9 @@ for iter=2:options_sd.maxiter+1
     dk = -gk;
     
     % Perform Hager-Zhang line search
-    [ tmin ] = helper_hzls( problem, xk, dk, options_hzls );
+    [ tmin, stat_hzls ] = helper_hzls( problem, xk, dk, options_hzls );
     
-%     info.nfeval(iter-1) = stat_hzls.nf;
+    info.nfeval(iter-1) = stat_hzls.nf;
     
     % Update to new xk
     xk = xk + tmin * dk;
@@ -72,7 +72,7 @@ end
 time_end = toc;
 
 if iter == options_sd.maxiter+1
-    output.msg = 'maximum number of mg iterations reached';
+    output.msg = 'maximum number of sd iterations reached';
 end
 %--------------------------------------------------------------------------
 

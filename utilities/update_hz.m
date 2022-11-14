@@ -1,6 +1,8 @@
-function [ ia, ib, alphas, values, slopes ] = update_hz( alphas, values, slopes, ia, ib, ic, phi_lim, x, s, options_hzls )
+function [ ia, ib, alphas, values, slopes, stat_hzls ] = update_hz( alphas, ...
+    values, slopes, ia, ib, ic, phi_lim, x, s, options_hzls, stat_hzls )
 
-% function [ ia, ib, alphas, values, slopes, stat_hzls ] = update_hz( alphas, values, slopes, ia, ib, ic, phi_lim, display, problem, x, s, stat_hzls )
+% function [ ia, ib, alphas, values, slopes, stat_hzls ] = update_hz( alphas, ...
+%     values, slopes, ia, ib, ic, phi_lim, x, s, options_hzls, stat_hzls )
 % Purpose: Implements [ \bar{a}, \bar{b} ] = update(a,b,c); see Hager and
 %          Zhang, stages U0-U3, p. 123.
 %          Given a third point, pick the best two that retain the bracket
@@ -71,8 +73,8 @@ else
     assert( alphas(ia) < alphas(ic) );
     assert( values(ic) > values(ia) );
     
-    [ ia, ib, alphas, values, slopes ] = bisect(alphas, values, slopes, ...
-        ia, ic, phi_lim, x, s, options_hzls );
+    [ ia, ib, alphas, values, slopes, stat_hzls ] = bisect(alphas, values, ...
+        slopes, ia, ic, phi_lim, x, s, options_hzls, stat_hzls );
 end
 
 end

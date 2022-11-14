@@ -24,4 +24,4 @@ h = (b - a)/10000;
 x=a:h:b;
 F = 1-2.*x+x.^2;
 
-plot( x, F, 'k-', 'LineWidth', 2 )
+plot( x, F, '-', 'Color', red, 'LineWidth', 2.5 )

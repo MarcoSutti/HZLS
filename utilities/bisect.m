@@ -1,8 +1,8 @@
-function [ ia, ib, alphas, values, slopes ] = bisect( alphas, values, ...
-    slopes, ia, ib, phi_lim, x, s, options_hzls )
+function [ ia, ib, alphas, values, slopes, stat_hzls ] = bisect( alphas, ...
+    values, slopes, ia, ib, phi_lim, problem, x, s, options_hzls, stat_hzls )
 
-% function [ ia, ib, alphas, values, slopes ] = bisect( alphas, values, ...
-%     slopes, ia, ib, phi_lim, display, x, s, options_hzls )
+% function [ ia, ib, alphas, values, slopes, stat_hzls ] = bisect( alphas, ...
+%     values, slopes, ia, ib, phi_lim, problem, x, s, options_hzls, stat_hzls )
 % Purpose: Implements stage U3 of the update routine (with theta=0.5).
 %          This is the loop encoded in the lines U3a-U3c, p. 123, of:
 %             [1] Hager and Zhang, Algorithm 851: CG DESCENT, a Conjugate
@@ -31,7 +31,7 @@ b = alphas(ib);
 % This is the loop encoded in the lines U3a-U3c of HZ pseudocode.
 while b - a > eps(b)
     
-    if display
+    if options_hzls.display
         fprintf('U3a, bisect: a = %.3e, b = %.3e, (b - a) = %3e.\n', a, b, b-a );
     end
 
@@ -40,12 +40,10 @@ while b - a > eps(b)
     %----------------------------------------------------------------------
     d = (a + b) / 2;
 
-    % [ phi_d, dphi_d, stat_hzls ] = feval(problem.eval_phidphi, problem, x, Dg, d, stat_hzls );
     % 2022.10.20
-    % [ phi_d, dphi_d ] = eval_phidphi(Da, Db, s, d);
-    [ phi_d, dphi_d ] = feval( options_hzls.eval_phidphi, x, s, d );
+    [ phi_d, dphi_d, stat_hzls ] = feval( options_hzls.eval_phidphi, problem, x, s, d, stat_hzls );
 
-    if display
+    if options_hzls.display
         fprintf('        phi_d = %.4e,   dphi_d = %.4e.\n', phi_d, dphi_d );
     end
 

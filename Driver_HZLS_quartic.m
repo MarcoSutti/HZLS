@@ -21,7 +21,7 @@ addpath(genpath('../HZLS'))
 rng(1)
 %--------------------------------------------------------------------------
 % Options for steepest descent:
-options_sd.maxiter = 9;     % number of steepest descent iterations
+options_sd.maxiter = 12;     % number of steepest descent iterations
 options_sd.verbosity = 2;    % verbosity of the output of steepest descent
                              % verbosity levels: 0, 1, 2.
 %--------------------------------------------------------------------------
@@ -34,6 +34,14 @@ options_hagerzhang_ls;
 % Define function phi(t) and its derivative for the Hager-Zhang line search
 options_hzls.eval_phi = 'get_phi';
 options_hzls.eval_phidphi = 'get_phidphi';
+%--------------------------------------------------------------------------
+% These global variables are used in the quadstep of the Hager-Zhang line
+% search. These variables are initialized as "nan" before the start of
+% steepest descent; they will be changed once the first iteration of
+% steepest descent is performed.
+global info_global;   info_global = nan;
+global current_lev;   current_lev = 1;
+global column_idx;    column_idx = 1;
 %--------------------------------------------------------------------------
 % DEFINE PROBLEM STRUCTURE
 %--------------------------------------------------------------------------

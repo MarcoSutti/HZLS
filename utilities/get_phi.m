@@ -1,6 +1,6 @@
-function [ phi_c ] = get_phi( problem, x, s, c )
+function [ phi_c, stat_hzls ] = get_phi( problem, x, s, c, stat_hzls )
 
-% function [ phi_c, stat_hzls ] = get_phi( problem, x, s, c )
+% function [ phi_c, stat_hzls ] = get_phi( problem, x, s, c, stat_hzls )
 % Purpose: Returns phi_c = f(x+c*s).
 % Created:     27.05.2020
 % Last change: 27.05.2020
@@ -16,6 +16,6 @@ x_new = x + c * s;
 phi_c = problem.cost(x_new);
 
 % Increase counter for the number of function evaluations
-% stat_hzls.nf = stat_hzls.nf + 1;
-%
+stat_hzls.nf = stat_hzls.nf + 1;
+
 end

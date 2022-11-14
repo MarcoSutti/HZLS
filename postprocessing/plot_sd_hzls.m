@@ -1,10 +1,10 @@
 function [] = plot_sd_hzls( info_HZLS, Fh_ref )
 
 % function [] = plot_sd_hzls( info_HZLS, Fh_ref )
-% Purpose: Plot the results given by ...
+% Purpose: Plot the results given by Driver_HZLS_quartic.
 
 % Created:     2021.02.17
-% Last change: 2021.11.02
+% Last change: 2021.11.14
 
 %   Jan 17, 2021:
 %       Created.
@@ -83,5 +83,34 @@ ylim( [ 5e-17, 100 ] )
 fig=gcf;
 fig.Units='normalized';
 fig.OuterPosition=[0 1 0.5 0.66];
+
+%----------------------------------------------------------------------
+% 2nd plot
+% Plot of the number of function evaluations vs iteration
+figure(2)
+x_HZLS = 1:length(info_HZLS.nfeval)+1;
+% MS, 2022.11.14: Added an offset of 0.5 to center the bar on the iteration
+% number:
+x_HZLS = x_HZLS - 0.5;
+x_HZLS = [ x_HZLS; x_HZLS ];
+y_HZLS = [ info_HZLS.nfeval, info_HZLS.nfeval(end); info_HZLS.nfeval, info_HZLS.nfeval(end) ];
+h_HZLS = area( x_HZLS([2:end end]), y_HZLS(1:end) );
+h_HZLS(1).FaceColor = red;
+hold on
+% h_HZLS(1).FaceAlpha = 7/8;   % Add transparency
+xlabel('iteration $k$ of steepest descent')
+ylabel('nf($k$)');
+% title('Number of function evaluations vs iteration');
+legend( 'HZLS', 'FontSize', 13, 'Location', 'NE' );
+xticks( 1:length(info_HZLS.nfeval) )
+xlim( [ 0, x_HZLS(end)+0.5 ] );
+ylim( [ 0; max(info_HZLS.nfeval)+2 ] )
+%--------------------------------------------------------------------------
+% Save the plot to file
+fileName = 'plots/easy_quadratic_nf_vs_k_hz';
+saveas( gcf, fileName, 'epsc' );
+fprintf('+-----------------------------------------------------------------+\n');
+fprintf('| Saved graph to file %s.eps.\n', fileName);
+fprintf('+-----------------------------------------------------------------+\n');
 
 end

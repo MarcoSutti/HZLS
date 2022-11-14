@@ -1,6 +1,6 @@
-function [ alphas, values ] = hagerzhang_linesearch( problem, x, s, options_hzls )
+function [ alphas, values, state, stat_hzls ] = hagerzhang_linesearch( problem, x, s, options_hzls )
 
-% function [ alphas, values, state, stat_hzls ] = hagerzhang_linesearch( x, s, options_hzls )
+% function [ alphas, values, state, stat_hzls ] = hagerzhang_linesearch( problem, x, s, options_hzls )
 % Purpose: Performs Hager-Zhang linesearch.
 % References: [1] Hager and Zhang, Algorithm 851: CG DESCENT, a Conjugate
 %                 Gradient Method with Guaranteed Descent, ACM Trans. Math.
@@ -16,6 +16,11 @@ function [ alphas, values ] = hagerzhang_linesearch( problem, x, s, options_hzls
 %   May 23, 2020:
 %       Code cleanup.
 
+% MS, 27.11.2019: Introduced these global variables to use quadstep.
+global info_global;
+global column_idx;
+global current_lev;
+
 if options_hzls.display
     fprintf('+---------------------------------------------------------------------------------------+\n');
     fprintf('|                                 Hager-Zhang linesearch                                |\n');
@@ -27,7 +32,7 @@ end
 %--------------------------------------------------------------------------
 % I0-I2 in HZ paper, denoted initial(k) in the HZ paper
 %--------------------------------------------------------------------------
-state = initialguess( problem, x, s, options_hzls );
+[ state, stat_hzls ] = initialguess( problem, x, s, options_hzls );
 c = state.alpha;
 if options_hzls.display
     fprintf('initial c = %.3e.\n', c );
@@ -36,8 +41,7 @@ end
 % END of I0-I2
 %--------------------------------------------------------------------------
 
-% [ phi_0, dphi_0 ] = eval_phidphi(Da, Db, Dg, c);
-[ phi_0, dphi_0 ] = feval( options_hzls.eval_phidphi, problem, x, s, c );
+[ phi_0, dphi_0, stat_hzls ] = feval( options_hzls.eval_phidphi, problem, x, s, 0, stat_hzls );
 
 if not( isfinite(phi_0) && isfinite(dphi_0) )
     error('Value and slope at step length = 0 must be finite.');
@@ -61,19 +65,14 @@ phi_lim = phi_0 + options_hzls.epsilon * abs(phi_0); % phi_0 + eps * abs(phi_0);
 
 assert( isfinite(c) && c <= options_hzls.alphamax );
 
-% [ phi_c, dphi_c, stat_hzls ] = feval(problem.eval_phidphi, problem, x, Dg, c, stat_hzls );
-
-% [ phi_c, dphi_c ] = eval_phidphi(Da, Db, Dg, c);
-[ phi_c, dphi_c ] = feval( options_hzls.eval_phidphi, problem, x, s, c );
+[ phi_c, dphi_c, stat_hzls ] = feval( options_hzls.eval_phidphi, problem, x, s, c, stat_hzls );
 
 iterfinite = 1;
 
 while ( not(isfinite(phi_c) && isfinite(dphi_c)) && (iterfinite < iterfinitemax) )
     iterfinite = iterfinite + 1;
     c = options_hzls.psi3 * c;    % Contracts c, since psi3 = 0.1
-    % [ phi_c, dphi_c, stat_hzls ] = feval(problem.eval_phidphi, problem, x, Dg, c, stat_hzls );
-    % [ phi_c, dphi_c ] = eval_phidphi(Da, Db, Dg, c);
-    [ phi_c, dphi_c ] = feval( options_hzls.eval_phidphi, problem, x, s, c );
+    [ phi_c, dphi_c, stat_hzls ] = feval( options_hzls.eval_phidphi, problem, x, s, c, stat_hzls );
 end
 
 if not(isfinite(phi_c) && isfinite(dphi_c))
@@ -94,7 +93,7 @@ if satisfies_wolfe( c, phi_c, dphi_c, phi_0, dphi_0, phi_lim, options_hzls )
         fprintf('Wolfe condition satisfied on point alpha = %.4e.\n', c );
     end
     % MS, 27.11.2019: Save the accepted c for future use.
-%     info_global(current_lev,column_idx) = c;
+    info_global(current_lev,column_idx) = c;
     return;   % return c, phi_c
 end
 
@@ -142,7 +141,7 @@ while ( ~isbracketed && iter < options_hzls.linesearchmax )
         
         % This implements U3a-c
         [ ia, ib, alphas, values, slopes ] = bisect( alphas, values, ...
-            slopes, ia, ib, phi_lim, x, s, options_hzls );
+            slopes, ia, ib, phi_lim, problem, x, s, options_hzls, stat_hzls );
 
         isbracketed = true;
     else
@@ -175,9 +174,7 @@ while ( ~isbracketed && iter < options_hzls.linesearchmax )
             end
         end
         
-%         [ phi_c, dphi_c, stat_hzls ] = feval(problem.eval_phidphi, problem, x, Dg, c, stat_hzls );
-        [ phi_c, dphi_c ] = feval( options_hzls.eval_phidphi, problem, x, s, c );
-%         [ phi_c, dphi_c ] = eval_phidphi(Da, Db, Dg, c);
+        [ phi_c, dphi_c, stat_hzls ] = feval( options_hzls.eval_phidphi, problem, x, s, c, stat_hzls );
         
         iterfinite = 1;
         
@@ -188,9 +185,7 @@ while ( ~isbracketed && iter < options_hzls.linesearchmax )
                 fprintf('B3: non-finite value, bisection.\n')
             end
             c = (cold + c) / 2;
-%             [ phi_c, dphi_c, stat_hzls ] = feval(problem.eval_phidphi, problem, x, Dg, c, stat_hzls );
-%             [ phi_c, dphi_c ] = eval_phidphi(Da, Db, Dg, c);
-            [ phi_c, dphi_c ] = feval( options_hzls.eval_phidphi, problem, x, s, c );
+            [ phi_c, dphi_c, stat_hzls ] = feval( options_hzls.eval_phidphi, problem, x, s, c, stat_hzls );
         end
         if not( isfinite(phi_c) && isfinite(dphi_c) )
             if options_hzls.display
@@ -236,7 +231,7 @@ while iter < options_hzls.linesearchmax
     % L1: Take the secant step
     %----------------------------------------------------------------------
     [ iswolfe, iA, iB, alphas, values, slopes ] = secant2( alphas, values, ...
-        slopes, ia, ib, phi_lim, x, s, problem, options_hzls );
+        slopes, ia, ib, phi_lim, x, s, problem, options_hzls, stat_hzls );
     if options_hzls.display
         fprintf('L1: END of secant2.\n');
     end
@@ -274,9 +269,7 @@ while iter < options_hzls.linesearchmax
         % Bisection:
         c = (A + B) / 2;
         
-        % [ phi_c, dphi_c, stat_hzls ] = feval(problem.eval_phidphi, problem, x, Dg, c, stat_hzls );
-        % [ phi_c, dphi_c ] = eval_phidphi(Da, Db, Dg, c);
-        [ phi_c, dphi_c ] = feval( options_hzls.eval_phidphi, problem, x, s, c );
+        [ phi_c, dphi_c, stat_hzls ] = feval( options_hzls.eval_phidphi, problem, x, s, c, stat_hzls );
 
         assert ( isfinite(phi_c) && isfinite(dphi_c) );
         alphas = [alphas; c];
@@ -284,7 +277,7 @@ while iter < options_hzls.linesearchmax
         slopes = [slopes; dphi_c];
         
         [ ia, ib, alphas, values, slopes ] = update_hz( alphas, values, ...
-            slopes, iA, iB, length(alphas), phi_lim, x, s, options_hzls );
+            slopes, iA, iB, length(alphas), phi_lim, x, s, options_hzls, stat_hzls );
     end
     %----------------------------------------------------------------------
     % L3: increment iter and go to L1

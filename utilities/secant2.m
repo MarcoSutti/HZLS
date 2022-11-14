@@ -1,6 +1,8 @@
-function [ iswolfe, ia, ib, alphas, values, slopes ] = secant2( alphas, values, slopes, ia, ib, phi_lim, x, s, problem, options_hzls )
+function [ iswolfe, ia, ib, alphas, values, slopes, stat_hzls ] = secant2( alphas, ...
+    values, slopes, ia, ib, phi_lim, x, s, problem, options_hzls, stat_hzls )
 
-% function [ iswolfe, ia, ib, alphas, values, slopes, stat_hzls ] = secant2( alphas, values, slopes, ia, ib, phi_lim, x, Dg, options_hzls )
+% function [ iswolfe, ia, ib, alphas, values, slopes, stat_hzls ] = secant2( alphas, ...
+%     values, slopes, ia, ib, phi_lim, x, s, problem, options_hzls, stat_hzls )
 % Purpose: Implementation of [\bar{a},\bar{b}] = secant^{2}(a,b).
 % References: [1] Hager and Zhang, Algorithm 851: CG DESCENT, a Conjugate
 %                 Gradient Method with Guaranteed Descent, ACM Trans. Math.
@@ -17,9 +19,9 @@ function [ iswolfe, ia, ib, alphas, values, slopes ] = secant2( alphas, values, 
 %       Code cleanup.
 
 % MS, 27.11.2019: Introduced these global variables to use quadstep.
-% global info_global;
-% global column_idx;
-% global current_lev;
+global info_global;
+global column_idx;
+global current_lev;
 
 phi_0 = values(1);
 dphi_0 = slopes(1);
@@ -41,8 +43,7 @@ end
 assert( isfinite(c) );
 
 % 2022.10.20
-% [ phi_c, dphi_c ] = eval_phidphi( x, Dg, c );
-[ phi_c, dphi_c ] = feval( options_hzls.eval_phidphi, problem, x, s, c );
+[ phi_c, dphi_c, stat_hzls ] = feval( options_hzls.eval_phidphi, problem, x, s, c, stat_hzls );
 
 assert( isfinite(phi_c) && isfinite(dphi_c) );
 
@@ -58,7 +59,7 @@ if satisfies_wolfe( c, phi_c, dphi_c, phi_0, dphi_0, phi_lim, options_hzls )
     end
         
     % MS, 27.11.2019: Save the accepted c for future use.
-    % info_global(column_idx) = c;
+    info_global(column_idx) = c;
     
     iswolfe = true;
     ia = ic;
@@ -72,8 +73,8 @@ if options_hzls.display
     fprintf('S1: update_hz is called by secant2\n')
 end
 
-[ iA, iB, alphas, values, slopes ] = update_hz(alphas, values, slopes, ...
-    ia, ib, ic, phi_lim, x, s, options_hzls );
+[ iA, iB, alphas, values, slopes, stat_hzls ] = update_hz( alphas, values, slopes, ...
+    ia, ib, ic, phi_lim, x, s, options_hzls, stat_hzls );
 if options_hzls.display
     fprintf('S1: iA = %d, iB = %d, ic = %d.\n', iA, iB, ic);
 end
@@ -101,7 +102,7 @@ if (iA == ic || iB == ic) && ( ( a <= c) && ( c <= b ) )
     end
 
     % 2022.10.24
-    [ phi_c, dphi_c ] = feval( options_hzls.eval_phidphi, problem, x, s, c );
+    [ phi_c, dphi_c, stat_hzls ] = feval( options_hzls.eval_phidphi, problem, x, s, c, stat_hzls );
 
     assert( isfinite(phi_c) && isfinite(dphi_c) );
 
@@ -117,7 +118,7 @@ if (iA == ic || iB == ic) && ( ( a <= c) && ( c <= b ) )
         end
         
         % MS, 27.11.2019: Save the accepted c for future use.
-        % info_global(current_lev,column_idx) = c;
+        info_global(current_lev,column_idx) = c;
         
         iswolfe = true;
         ia = ic;
@@ -128,8 +129,8 @@ if (iA == ic || iB == ic) && ( ( a <= c) && ( c <= b ) )
     if options_hzls.display
         fprintf('S4: update_hz is called by secant2\n');
     end
-    [ iA, iB, alphas, values, slopes ] = update_hz(alphas, values, slopes, ...
-        iA, iB, ic, phi_lim, x, s, options_hzls );
+    [ iA, iB, alphas, values, slopes, stat_hzls ] = update_hz( alphas, values, slopes, ...
+        iA, iB, ic, phi_lim, x, s, options_hzls, stat_hzls );
 end
 if options_hzls.display
     fprintf('secant2 output: a = %.4e, b = %.4e.\n', alphas(iA), alphas(iB) );
