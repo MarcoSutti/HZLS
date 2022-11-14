@@ -12,7 +12,7 @@
 close all; clear; clc;
 
 % Add folder and its subfolders to MATLAB path for the current session:
-addpath(genpath('../HZLS_code_scorporato'))
+addpath(genpath('../HZLS'))
 
 %--------------------------------------------------------------------------
 % Data

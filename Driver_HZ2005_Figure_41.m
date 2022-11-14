@@ -3,10 +3,13 @@
 % References: [1] Hager and Zhang, A new conjugate gradient method with
 %                 guaranteed descent and an efficient line search, SIAM
 %                 Journal on Optimization, 16 (2005), pp. 170???192.
-% Created:     29.08.2020
-% Last change: 29.08.2020
+% Created:     2020.08.29
+% Last change: 2020.08.29
 %==========================================================================
 close all; clear; clc;
+
+% Add folder and its subfolders to MATLAB path for the current session:
+addpath(genpath('../HZLS'))
 
 options_plot;
 %--------------------------------------------------------------------------
