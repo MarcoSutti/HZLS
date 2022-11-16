@@ -4,6 +4,8 @@ A MATLAB implementation of the Hager–Zhang line-search technique [1, 2], which
 This MATLAB version of the Hager–Zhang bracketing has been implemented by following the existing Julia code available at:
 https://julianlsolvers.github.io/LineSearches.jl/stable/index.html
 
+If there are any problems or bugs, feel free to email me at msutti (at) ncts.tw
+
 ## I) Version History
 This code was originally included in the RMGLS package, released in June 2020. We decided to make this new version available independently of the RMGLS code.
 * Ver 2, November 2022.
